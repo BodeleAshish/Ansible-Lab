@@ -1,5 +1,5 @@
 # Ansible-Lab setup in windows
-Practice ansible in windows(wsl as manage node) and Oracle virtual box (for worker node) with linux image (with passwordless login).
+Practice ansible in windows (wsl as manage node) and Oracle virtual box (for worker node) with linux image (with passwordless login).
 
 If we are working in windows system then install wsl and Oracle Virtual Box
 So interaction will be made from wsl system to ubuntu/linux from oracle virtual image
