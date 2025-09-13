@@ -1,0 +1,69 @@
+---
+- name: Configure Ubuntu web servers
+  hosts: webservers
+  gather_facts: false   # start without facts; we'll ensure Python first
+  become: true
+
+  pre_tasks:
+    - name: Ensure Python exists (for Ansible modules)
+      raw: |
+        test -e /usr/bin/python3 || (apt-get update -y && apt-get install -y python3)
+      changed_when: false
+
+    - name: Gather facts now that Python is present
+      setup:
+
+  tasks:
+    #- name: Update apt cache (safe & idempotent)
+    #  apt:
+    #    update_cache: true
+    #    cache_valid_time: 3600
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Ensure Nginx is enabled and running
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Create index.html
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!doctype html>
+          <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>Ansible Deployed</title>
+          </head>
+          <body>
+            <h1>✅ Deployed by Ansible</h1>
+            <p>Host: {{ inventory_hostname }}</p>
+            <p>Time: {{ ansible_date_time.iso8601 }}</p>
+          </body>
+          </html>
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Open HTTP in UFW if UFW is active (non-fatal if absent)
+      block:
+        - name: Check UFW status
+          command: ufw status
+          register: ufw_status
+          changed_when: false
+          failed_when: false
+
+        - name: Allow HTTP if UFW active
+          ufw:
+            rule: allow
+            name: 'Nginx Full'
+          when: "'Status: active' in ufw_status.stdout"
+      rescue:
+        - debug:
+            msg: "UFW not present or command failed; skipping firewall config."
+
