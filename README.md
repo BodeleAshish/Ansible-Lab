@@ -28,7 +28,8 @@ systemctl status ssh  ## check whether ssh system active
 ```
 ## VirtualBox networking (so WSL2 can reach your VMs)
 #### Goal: The WSL2 instance must be able to route to your VM IPs(Orcle virutal box vm).
-### Install any linux image in the box. Next steps are of network steps
+#### Install any linux image in the box [Linux_Images](https://www.linuxvmimages.com/images/ubuntuserver-2404/). 
+### Network setups in virutal VM
 - Host-Only Adapter (private lab)
 	- In virtual Box
 		- File --> Tools --> Network Manager --> create  ## It will create network for you
